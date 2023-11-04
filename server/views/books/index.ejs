@@ -8,7 +8,7 @@
           <!-- ------------------------ -->
           <!-- FIX THE ADD BUTTON BELOW -->
           <!-- ------------------------ -->
-          <a href="/books/details.ejs" class="btn btn-primary"><i class="fa fa-plus"></i> Add a book</a>
+          <a href="/books/add" class="btn btn-primary"><i class="fa fa-plus"></i> Add a book</a>
           <br>
           <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover">
@@ -32,17 +32,16 @@
                   <td class="text-center"><%= books[count].Genre %></td>
 
                   <td class="text-center">
-                    <!-- ------------------------ -->
                     <!-- ADD the EDIT BUTTON HERE -->
-                    <!-- ------------------------ -->
-                    <a href="/books/details.ejs?_id=${book._id}" class="btn btn-primary">Edit</a>
+                    <a href="/books/<%= books[count]._id %>" class="btn btn-primary">Edit</a>
                   </td>
+                  
 
                   <td class="text-center">
                     <!-- ------------------------ -->
                     <!-- ADD the DELETE BUTTON HERE -->
                     <!-- ------------------------ -->
-                    <a href="/books/delete/${book._id}" class="btn btn-primary">Delete</a>
+                    <a href="/books/delete/<%= books[count]._id %>" class="btn btn-danger">Delete</a>
                   </td>
                 </tr>
                 <% } %>
