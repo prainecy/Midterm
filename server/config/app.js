@@ -1,61 +1,64 @@
-// moddules for node and express
-let createError = require('http-errors');
-let express = require('express');
-let path = require('path');
-let cookieParser = require('cookie-parser');
-let logger = require('morgan');
+// Import required modules for your Node.js and Express application
+let createError = require('http-errors'); // To create HTTP errors
+let express = require('express'); // Express web framework
+let path = require('path'); // For working with file paths
+let cookieParser = require('cookie-parser'); // For parsing cookies
+let logger = require('morgan'); // Middleware for request logging
 
-// import "mongoose" - required for DB Access
+// Import "mongoose" for Database Access
 let mongoose = require('mongoose');
-// URI
+// Define the URI for the database
 let DB = require('./db');
 
-mongoose.connect(process.env.URI || DB.URI, {useNewUrlParser: true, useUnifiedTopology: true});
+// Connect to the MongoDB database using Mongoose
+mongoose.connect(process.env.URI || DB.URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
+// Get a reference to the MongoDB connection
 let mongoDB = mongoose.connection;
+
+// Handle MongoDB connection events
 mongoDB.on('error', console.error.bind(console, 'Connection Error:'));
-mongoDB.once('open', ()=> {
+mongoDB.once('open', () => {
   console.log("Connected to MongoDB...");
 });
 
+// Define routers for your application
+let index = require('../routes/index'); // Top-level routes
+let books = require('../routes/books'); // Routes for managing books
 
-// define routers
-let index = require('../routes/index'); // top level routes
-let books = require('../routes/books'); // routes for books
-
+// Create an Express application
 let app = express();
 
-// view engine setup
+// Configure your view engine and views directory
 app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /client
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '../../client')));
+// Middleware setup
+app.use(logger('dev')); // Set up request logging
+app.use(express.json()); // Parse JSON requests
+app.use(express.urlencoded({ extended: false })); // Parse URL-encoded requests
+app.use(cookieParser()); // Parse cookies
+app.use(express.static(path.join(__dirname, '../../client'))); // Serve static files from the 'client' directory
 
+// Route setup
+app.use('/', index); // Set the top-level route
+app.use('/books', books); // Set routes for books management
 
-// route redirects
-app.use('/', index);
-app.use('/books', books);
-
-
-// catch 404 and forward to error handler
+// Catch 404 errors and forward them to the error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+  // Set locals, providing error messages in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // Render the error page
   res.status(err.status || 500);
   res.render('error');
 });
 
+// Export the Express app to make it available for other parts of your application
 module.exports = app;
